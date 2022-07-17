@@ -216,8 +216,8 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
         //If we've reach the limit, then the dice is dead
         if (modifier - 1 <= -6)
         {
-            OnDiceDied?.Invoke();
             Destroy(gameObject);
+            OnDiceDied?.Invoke();
             return;
         }
         

@@ -81,12 +81,17 @@ public class Room : MonoBehaviour
 
     private void OnDiceDied()
     {
-        var found = FindObjectOfType<Dice_Prototype>();
-
-        if (found == null)
+        IEnumerator WaitFrameCoroutine()
         {
-            //TODO Lose Game
+            yield return null;
+            
+            var found = FindObjectOfType<Dice_Prototype>();
+
+            if (found == null)
+                OnLost?.Invoke();
         }
+
+        StartCoroutine(WaitFrameCoroutine());
     }
     
     //================================================================================================================//

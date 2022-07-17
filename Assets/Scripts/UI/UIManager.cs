@@ -24,7 +24,12 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private TMP_Text tokensEarnedText;
 
+    [SerializeField, Header("Death Screen")]
+    private GameObject deathScreenWindow;
     [SerializeField]
+    private Button restartButton;
+
+    [SerializeField, Header("Fading UI")]
     private Image fadeImage;
 
     //Unity Functions
@@ -35,12 +40,18 @@ public class UIManager : MonoBehaviour
         RoomGameTimer.TickEvent += TickEvent;
         CoinCollectable.OnCoinCollected += OnCoinCollected;
         Enemy.OnEnemyKilled += OnEnemyKilled;
+        Room.OnLost += OnLost;
     }
+
+
 
     // Start is called before the first frame update
     private void Start()
     {
         TickEvent(0);
+        deathScreenWindow.SetActive(false);
+
+        SetupButtons();
     }
 
     private void LateUpdate()
@@ -51,10 +62,20 @@ public class UIManager : MonoBehaviour
     private void OnDisable()
     {
         RoomGameTimer.TickEvent -= TickEvent;
+        Room.OnLost -= OnLost;
     }
 
     //UIManager Functions
     //================================================================================================================//
+
+    private void SetupButtons()
+    {
+        restartButton.onClick.AddListener(() =>
+        {
+            LevelManager.LoadFirstLevel();
+            deathScreenWindow.SetActive(false);
+        });
+    }
 
     public void ShowTickTimer(bool showTickTimer)
     {
@@ -75,6 +96,12 @@ public class UIManager : MonoBehaviour
     {
         GameStateManager.TotalKills++;
         enemiesKilledText.text = GameStateManager.TotalKills.ToString();
+    }
+    
+    private void OnLost()
+    {
+        deathScreenWindow.SetActive(true);
+        
     }
     
     //Fade Functions

@@ -1275,6 +1275,8 @@ MonoBehaviour:
   timerText: {fileID: 1700525792}
   enemiesKilledText: {fileID: 349324091}
   tokensEarnedText: {fileID: 2072071972}
+  deathScreenWindow: {fileID: 1779800743}
+  restartButton: {fileID: 622212021}
   fadeImage: {fileID: 1437427736539905352}
 --- !u!1 &934169788
 GameObject:
