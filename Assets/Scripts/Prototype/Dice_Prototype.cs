@@ -93,7 +93,14 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
 
     //Unity Functions
     //================================================================================================================//
-    
+
+    private void OnEnable()
+    {
+        LevelManager.OnWon += OnWon;
+    }
+
+
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -173,6 +180,12 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
         lineRenderer.enabled = false;
         _currentlyDragging = false;
     }
+    
+    private void OnDisable()
+    {
+        LevelManager.OnWon -= OnWon;
+    }
+
 
     //Movement Functions
     //================================================================================================================//
@@ -190,6 +203,11 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
         _applyNoDamage = true;
         Movement.Move(direction, speed);
         transform.forward = direction;
+    }
+    
+    private void OnWon()
+    {
+        Destroy(gameObject);
     }
     
     //Dice Functions
