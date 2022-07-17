@@ -13,7 +13,11 @@ public class LevelManager : MonoBehaviour
 
     private UIManager _uiManager;
 
-    [SerializeField, Min(0f)]
+#if UNITY_EDITOR
+    [SerializeField, Min(0), Header("Debug Values")] private int debugStartScene;
+#endif
+
+    [SerializeField, Min(0f), Header("Scene Fading")]
     private float fadeTime;
     [SerializeField, Header("Levels")]
     private List<Room> roomPrefabs;
@@ -42,7 +46,15 @@ public class LevelManager : MonoBehaviour
         _uiManager = FindObjectOfType<UIManager>();
 
         _activeScene = SceneManager.CreateScene("Rooms Scene");
+
+#if UNITY_EDITOR
+        _currentRoomIndex = debugStartScene;
+        TryLoadRoom(true);
+#else
         TryLoadFirst(true);
+
+#endif
+        
     }
     
     //================================================================================================================//

@@ -1,4 +1,5 @@
-﻿using Unity.Mathematics;
+﻿using System;
+using Unity.Mathematics;
 using UnityEngine;
 using Utilities.Extension;
 
@@ -6,6 +7,8 @@ namespace Destructibles
 {
     public class DestructibleBase : MonoBehaviour, IDestructable
     {
+        public static Action OnDestroyed;
+        
         //Properties
         //================================================================================================================//
 
@@ -18,6 +21,8 @@ namespace Destructibles
         [SerializeField, NonReorderable]
         private LootData[] loot;
 
+        private bool _destroyed;
+
         //Unity Functions
         //================================================================================================================//
 
@@ -25,7 +30,15 @@ namespace Destructibles
         {
             CurrentHealth = startHealth;
         }
-        
+
+        private void OnDestroy()
+        {
+            if (_destroyed == false)
+                return;
+            
+            OnDestroyed?.Invoke();
+        }
+
         //DestructibleBase Functions
         //================================================================================================================//
         private void DropLoot()
@@ -64,6 +77,7 @@ namespace Destructibles
 
             DropLoot();
             Destroy(gameObject);
+            _destroyed = true;
         }
         
         

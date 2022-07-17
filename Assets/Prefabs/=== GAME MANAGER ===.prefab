@@ -3222,3 +3222,6 @@ MonoBehaviour:
   fadeTime: 1
   roomPrefabs:
   - {fileID: 6792146536075838041, guid: 3b727147ee30d3c4eb128b1953e260b1, type: 3}
+  - {fileID: 6792146536075838041, guid: 7ffbffb1f778e614fa74e78edb30140d, type: 3}
+  - {fileID: 6792146536075838041, guid: 89335a0f7b96ab14dbed7d126532793b, type: 3}
+  - {fileID: 6792146536075838041, guid: 5ac3cb58cb4b7c54bb0fb4eb26979b7c, type: 3}

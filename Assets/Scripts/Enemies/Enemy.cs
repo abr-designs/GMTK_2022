@@ -61,6 +61,7 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
     //================================================================================================================//
 
     private bool _isSpawning;
+    private bool _killed;
     
     //Unity Functions
     //================================================================================================================//
@@ -84,7 +85,15 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
     {
         RoomGameTimer.ActionEvent -= MoveTowardClosestDice;
     }
-    
+
+    private void OnDestroy()
+    {
+        if (_killed == false)
+            return;
+        
+        OnEnemyKilled?.Invoke();
+    }
+
     //Enemy Functions
     //================================================================================================================//
 
@@ -202,8 +211,8 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
             .SetFloatingValues(transform.position + Vector3.up, FloatingSprite.TYPE.SKULL);
         
         DropLoot();
-        
-        OnEnemyKilled?.Invoke();
+
+        _killed = true;
         //TODO Do any VFX for death here
         Destroy(gameObject);
     }

@@ -5,7 +5,9 @@ using Utilities.Extension;
 public class RoomEnemyManager : MonoBehaviour
 {
     private Dice_Prototype[] _dice;
-    
+
+    public List<Enemy> ActiveEnemies { get; private set; }
+
     //================================================================================================================//
 
     [SerializeField]
@@ -18,6 +20,8 @@ public class RoomEnemyManager : MonoBehaviour
 
     [SerializeField]
     private Enemy enemyPrefab;
+
+    public int EnemySpawnedCount { get; private set; }
     /*[SerializeField]
     private EnemyStatsScriptableObject[] spawnEnemies;*/
     
@@ -27,15 +31,16 @@ public class RoomEnemyManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        _dice = FindObjectsOfType<Dice_Prototype>();
-        //SpawnEnemies();
+        EnemySpawnedCount = 0;
     }
     
 
     //================================================================================================================//
 
-    public void SpawnEnemies(in IEnumerable<EnemyStatsScriptableObject> spawnEnemies)
+    public void SpawnEnemies(in IEnumerable<EnemyStatsScriptableObject> spawnEnemies, in Dice_Prototype[] dice)
     {
+        _dice = dice;
+        ActiveEnemies = new List<Enemy>();
         foreach (var enemyData in spawnEnemies)
         {
             Vector3 checkPoint = Vector3.zero;
@@ -59,6 +64,8 @@ public class RoomEnemyManager : MonoBehaviour
                 transform);
             
             newEnemy.Init(enemyData);
+            EnemySpawnedCount++;
+            ActiveEnemies.Add(newEnemy);
         }
     }
     
