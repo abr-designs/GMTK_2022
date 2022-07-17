@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Wall
   - Destructable
+  - Dice
   layers:
   - Default
   - TransparentFX
@@ -15,8 +16,8 @@ TagManager:
   - UI
   - Wall
   - Destructable
-  - 
-  - 
+  - Collectable
+  - Dice
   - 
   - 
   - 
@@ -42,4 +43,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: VFX
+    uniqueID: 146146353
+    locked: 0
+  - name: Foreground
+    uniqueID: 537396795
     locked: 0

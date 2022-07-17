@@ -1,13 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Utilities;
 using Random = UnityEngine.Random;
 
-public class Dice_Prototype : MonoBehaviour
+public class Dice_Prototype : MonoBehaviour, ICheckForCollision
 {
     private const string WALL_TAG = "Wall";
     private const string DESTRUCTABLE_TAG = "Destructable";
@@ -16,9 +13,14 @@ public class Dice_Prototype : MonoBehaviour
     //================================================================================================================//
 
     [SerializeField]
+    private int modifier;
+    
+    [SerializeField]
     private LineRenderer lineRenderer;
     [SerializeField]
     private TMP_Text tmpText;
+    [SerializeField]
+    private TMP_Text modifierText;
 
     private int _currentValue;
 
@@ -52,13 +54,28 @@ public class Dice_Prototype : MonoBehaviour
     
     //================================================================================================================//
 
-    private bool _isMoving;
+    public bool IsMoving => Movement.IsMoving;
+    private Movement Movement
+    {
+        get
+        {
+            if (_movement == null)
+                _movement = GetComponent<Movement>();
+
+            return _movement;
+        }
+    }
+    private Movement _movement;
+
+    private bool _applyNoDamage;
+
+    /*public bool IsMoving { get; private set; }
 
     private Vector3 _currentVelocity;
     [SerializeField]
     private float speedDecay;
 
-    private const float MovingThreshold = 0.25f;
+    private const float MovingThreshold = 0.25f;*/
     
     //================================================================================================================//
 
@@ -80,32 +97,26 @@ public class Dice_Prototype : MonoBehaviour
 
         _rays = new Ray[3];
         RollNewRandomNumber();
+        SetNewModifier(0);
+        
+        Movement.Init(this);
     }
 
     private void Update()
     {
-        if (_isMoving == false)
+        if (Movement.IsMoving == false && _applyNoDamage)
+            _applyNoDamage = false;
+        
+        if (Movement.IsMoving == false)
             return;
         
         tmpText.transform.eulerAngles = Vector3.right * 90;
-        
-        if (_currentVelocity.magnitude <= MovingThreshold)
-            _isMoving = false;
-
-        //------------------------------------------------------------------------------------------------------------//
-
-        if (CanContinueMoving() == false)
-            return;
-        
-        //------------------------------------------------------------------------------------------------------------//
-
-        transform.position += _currentVelocity * Time.deltaTime;
-        _currentVelocity -= _currentVelocity * (speedDecay * Time.deltaTime);
+        modifierText.transform.eulerAngles = Vector3.right * 45;
     }
 
     private void OnMouseDrag()
     {
-        if (_isMoving)
+        if (Movement.IsMoving)
             return;
         
         
@@ -150,7 +161,7 @@ public class Dice_Prototype : MonoBehaviour
         if (_currentlyDragging == false)
             return;
         
-        LaunchDice(_launchDir, _dragDistance);
+        LaunchDice(_launchDir, _dragDistance * speedMult);
         lineRenderer.enabled = false;
         _currentlyDragging = false;
     }
@@ -158,13 +169,22 @@ public class Dice_Prototype : MonoBehaviour
     //Movement Functions
     //================================================================================================================//
 
-
-    private void LaunchDice(in Vector3 direction, in float distance)
+    private void LaunchDice(in Vector3 direction, in float speed)
     {
-        _isMoving = true;
-        _currentVelocity = direction * distance * speedMult;
+        Movement.Move(direction, speed);
+        
         transform.forward = direction;
     }
+
+    public void HitDice(in Vector3 direction, in float speed)
+    {
+        _applyNoDamage = true;
+        Movement.Move(direction, speed);
+    }
+    
+    //Dice Functions
+    //================================================================================================================//
+
 
     private void RollNewRandomNumber()
     {
@@ -176,14 +196,48 @@ public class Dice_Prototype : MonoBehaviour
             newValue = Random.Range(1, 7);
         }
 
-        _currentValue = newValue; 
+        SetNewValue(newValue);
+    }
+
+    public void ReduceEffectiveness()
+    {
+        if (Movement.IsMoving)
+            return;
+        
+        //If we've reach the limit, then the dice is dead
+        if(modifier - 1 <= -6)
+            Destroy(gameObject);
+        
+        SetNewModifier(modifier - 1);
+    }
+    
+    public void RaiseEffectiveness(in int amount)
+    {
+        SetNewModifier(modifier + amount);
+    }
+
+    private void SetNewValue(in int value)
+    {
+        _currentValue = value; 
 
         tmpText.text = _currentValue.ToString();
+    }
+    private void SetNewModifier(in int value)
+    {
+        modifier = value;
+
+        if (modifier == 0)
+        {
+            modifierText.text = string.Empty;
+            return;
+        }
+
+        modifierText.text = value < 0 ? $"<color=red>{value}</color>" : $"<color=green>+{value}</color>";
     }
     
     //================================================================================================================//
 
-    private bool CanContinueMoving()
+    public bool CheckForCollision()
     {
         _rays[0] = new Ray(transform.position, transform.forward.normalized);
         _rays[1] = new Ray(transform.position + (transform.right.normalized * 0.25f), transform.forward.normalized);
@@ -198,18 +252,19 @@ public class Dice_Prototype : MonoBehaviour
 
             if (hitGameObject.CompareTag(WALL_TAG))
             {
-                _currentVelocity = Vector3.Reflect(_currentVelocity, raycastHit.normal);
-                transform.forward = _currentVelocity.normalized;
+                Movement.Reflect(raycastHit.normal);
+                transform.forward = Movement.Direction;
                 break;
             }
-            else if (hitGameObject.CompareTag(DESTRUCTABLE_TAG))
+            else if (_applyNoDamage == false && hitGameObject.CompareTag(DESTRUCTABLE_TAG))
             {
 
                 var shouldDestroy = false;
                 var destructable = hitGameObject.GetComponent<IDestructable>();
                 if (destructable != null)
                 {
-                    destructable.ChangeHealth(-_currentValue);
+                    var damage = Mathf.Clamp(Mathf.Abs(_currentValue + modifier), 1, 20);
+                    destructable.ChangeHealth(-damage);
 
                     if (destructable.CurrentHealth <= 0)
                         shouldDestroy = true;
@@ -221,18 +276,25 @@ public class Dice_Prototype : MonoBehaviour
 
                 if (shouldDestroy == false)
                 {
-                    //TODO Should Reflect
-                    _currentVelocity = Vector3.Reflect(_currentVelocity,
-                        Vector3.ProjectOnPlane((raycastHit.transform.position - transform.position).normalized, Vector3.up));
-                    transform.forward = _currentVelocity.normalized;
+                    if (destructable is Enemy enemy)
+                    {
+                        //enemy.Push(_currentVelocity.normalized, _currentVelocity.magnitude);
+                        enemy.Movement.ApplyMovement(Movement);
+                    }
+                    
+                    Movement.Reflect(Vector3.ProjectOnPlane((raycastHit.transform.position - transform.position).normalized, Vector3.up));
+                    transform.forward = Movement.Direction;
+                    
                     return true;
                 }
                 
-                Destroy(hitGameObject);
+                if(destructable.HandlesDestruction == false)
+                    Destroy(hitGameObject);
+
+                Movement.Rotate(Quaternion.Euler(0, Random.Range(-90, 90), 0));
 
                 //TODO Might want to do a frame pause here
-                _currentVelocity = Quaternion.Euler(0, Random.Range(-90, 90), 0) * _currentVelocity;
-                transform.forward = _currentVelocity.normalized;
+                transform.forward = Movement.Direction;
                 return false;
             }
         }
@@ -241,7 +303,6 @@ public class Dice_Prototype : MonoBehaviour
     }
     
     //================================================================================================================//
-
     
 #if UNITY_EDITOR
 

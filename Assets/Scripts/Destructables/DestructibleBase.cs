@@ -5,17 +5,18 @@ namespace Destructibles
 {
     public class DestructibleBase : MonoBehaviour, IDestructable
     {
+        public bool HandlesDestruction => false;
         public int StartHealth => startHealth;
         [Min(0), SerializeField]
         private int startHealth = 4;
         public int CurrentHealth { get; private set; }
 
-        private void Start()
+        protected virtual void Start()
         {
             CurrentHealth = startHealth;
         }
 
-        public void ChangeHealth(int changeAmount)
+        public virtual void ChangeHealth(int changeAmount)
         {
             CurrentHealth = Mathf.Clamp(CurrentHealth + changeAmount, 0, StartHealth);
         }

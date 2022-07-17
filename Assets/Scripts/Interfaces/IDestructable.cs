@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public interface IDestructable
 {
+    bool HandlesDestruction { get; }
     int StartHealth { get; }
     int CurrentHealth { get; }
 
