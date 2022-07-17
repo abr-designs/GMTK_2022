@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using Utilities;
 using Utilities.Extension;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
@@ -54,7 +56,11 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
     }
     private Movement _movement;
     
-    private Transform transform;
+    
+    //Spawning Properties
+    //================================================================================================================//
+
+    private bool _isSpawning;
     
     //Unity Functions
     //================================================================================================================//
@@ -70,7 +76,6 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
         if (_roomEnemyManager == null)
             _roomEnemyManager = FindObjectOfType<RoomEnemyManager>();
         
-        transform = gameObject.transform;
         _rays = new Ray[3];
         Movement.Init(this);
     }
@@ -91,6 +96,8 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
         _moveDistance = _enemyStatsScriptableObject.moveDistance;
 
         StartHealth = CurrentHealth = _enemyStatsScriptableObject.enemyHealth;
+
+        PlaySpawnAnimation();
     }
 
     private void DropLoot()
@@ -111,8 +118,55 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
         }
     }
 
+    private void PlaySpawnAnimation()
+    {
+        IEnumerator SpawnCoroutine()
+        {
+            _isSpawning = true;
+
+            
+            
+            var startPos = transform.position - Vector3.up * 3f;
+            var endPos = transform.position;
+
+            var spawnTime = _enemyStatsScriptableObject.spawnTime;
+            var spawnCurve = _enemyStatsScriptableObject.spawnCurve;
+            var shakeAmount = _enemyStatsScriptableObject.shakeAmount;
+
+            var VFX = EffectFactory.CreateSpawningVFX();
+            VFX.transform.position = endPos - Vector3.up;
+            transform.position = startPos;
+
+            //TODO Create Spawning VFX
+            yield return new WaitForSeconds(_enemyStatsScriptableObject.spawnDelay.GetRandomRange());
+
+            for (var t = 0f; t < spawnTime; t += Time.deltaTime )
+            {
+                var td = spawnCurve.Evaluate(t / spawnTime);
+                transform.position = Vector3.Lerp(startPos, endPos, td) + Random.insideUnitSphere * shakeAmount;
+            
+                yield return null;
+            }
+        
+            transform.position = endPos;
+            var emissionModule = VFX.emission;
+            emissionModule.rateOverTime = 0f;
+            
+
+            _isSpawning = false;
+        }
+        
+        if (_isSpawning)
+            return;
+        
+        StartCoroutine(SpawnCoroutine());
+    }
+
     private void MoveTowardClosestDice()
     {
+        if (_isSpawning)
+            return;
+        
         var currentPos = transform.position;
         var targetPosition = _roomEnemyManager.GetClosestDicePosition(currentPos);
 
@@ -132,6 +186,9 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
 
     public void ChangeHealth(int changeAmount)
     {
+        if (_isSpawning)
+            return;
+        
         CurrentHealth = Mathf.Clamp(CurrentHealth + changeAmount, 0, StartHealth);
 
         if (CurrentHealth > 0)

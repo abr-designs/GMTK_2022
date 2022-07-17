@@ -9,6 +9,9 @@ public class EffectFactory : MonoBehaviour
     [SerializeField]
     private FloatingSprite floatingSpritePrefab;
 
+    [SerializeField]
+    private ParticleSystem spawningVFXPrefab;
+
     private void Awake()
     {
         if (_instance)
@@ -30,5 +33,10 @@ public class EffectFactory : MonoBehaviour
     public static FloatingSprite CreateFloatingSprite()
     {
         return Instantiate(_instance.floatingSpritePrefab, _instance.transform, false);
+    }
+    
+    public static ParticleSystem CreateSpawningVFX()
+    {
+        return Instantiate(_instance.spawningVFXPrefab, _instance.transform, false);
     }
 }

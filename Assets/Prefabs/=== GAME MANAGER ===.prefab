@@ -3203,6 +3203,8 @@ MonoBehaviour:
     type: 3}
   floatingSpritePrefab: {fileID: 58865599002178526, guid: d9e235747d3af7e46b496e50eab6b647,
     type: 3}
+  spawningVFXPrefab: {fileID: 205424650508240771, guid: f2c175fe240459240a666eac9d1798ba,
+    type: 3}
 --- !u!114 &321181521
 MonoBehaviour:
   m_ObjectHideFlags: 0
