@@ -216,6 +216,12 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
         //If we've reach the limit, then the dice is dead
         if (_modifier - 1 <= -6)
         {
+            var bigHitVFX = EffectFactory.CreateBigHitVFX();
+            bigHitVFX.transform.position = transform.position;
+            Destroy(bigHitVFX.gameObject, 2f);
+                    
+            AudioController.PlaySound(SOUND.DEATH);
+            
             Destroy(gameObject);
             OnDiceDied?.Invoke();
             return;
@@ -271,7 +277,9 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
             {
                 var bumpVFX = EffectFactory.CreateBumpVFX();
                 bumpVFX.transform.position = raycastHit.point;
-                Destroy(bumpVFX, 2f);
+                Destroy(bumpVFX.gameObject, 2f);
+                
+                AudioController.PlaySound(SOUND.BUMP);
                 
                 Movement.Reflect(raycastHit.normal);
                 transform.forward = Movement.Direction;
@@ -307,12 +315,16 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
                     var bigHitVFX = EffectFactory.CreateBigHitVFX();
                     bigHitVFX.transform.position = raycastHit.point;
                     Destroy(bigHitVFX.gameObject, 2f);
+                    
+                    AudioController.PlaySound(SOUND.DEATH);
                 }
                 else
                 {
                     var smallHitVFX = EffectFactory.CreateSmallHitVFX();
                     smallHitVFX.transform.position = raycastHit.point;
                     Destroy(smallHitVFX.gameObject, 2f);
+                    
+                    AudioController.PlaySound(SOUND.HIT);
                 }
 
                 if (shouldDestroy == false)

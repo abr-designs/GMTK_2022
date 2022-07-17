@@ -123,11 +123,8 @@ public class Room : MonoBehaviour
         for (var i = 0; i < startLocations.Length; i++)
         {
             var newDice = Instantiate(dicePrefab, startLocations[i], Quaternion.identity, transform);
-            if (GameStateManager.CarryOverModifier != 0)
-            {
-                newDice.SetNewModifier(GameStateManager.CarryOverModifier);
-                GameStateManager.CarryOverModifier = 0;
-            }
+            newDice.SetNewModifier(GameStateManager.CarryOverModifier);
+            GameStateManager.CarryOverModifier = 0;
             _dice[i] = newDice;
             
         }
@@ -164,12 +161,14 @@ public class Room : MonoBehaviour
                         break;
                     _uiManager.ShowTickTimer(false);
                     door.SetDoorOpen(true);
+                    AudioController.PlaySound(SOUND.DOOR);
                     _completed = true;
                     break;
                 case CONIDITION.DESTRUCTIBLES:
                     if (_roomDestructables.All(a => a == null) == false)
                         break;
                     door.SetDoorOpen(true);
+                    AudioController.PlaySound(SOUND.DOOR);
                     _completed = true;
                     break;
                 case CONIDITION.BOTH:
@@ -180,11 +179,14 @@ public class Room : MonoBehaviour
                     if (_roomDestructables.All(a => a == null) == false)
                         break;
                     door.SetDoorOpen(true);
+                    AudioController.PlaySound(SOUND.DOOR);
                     _completed = true;
                     break;
             }
         }
 
+        if (_completed)
+            return;
         if (openCondition == CONIDITION.NONE)
             return;
 

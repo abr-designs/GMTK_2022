@@ -42,6 +42,7 @@ public class DiceCollector : MonoBehaviour
                 continue;
             
             collectable.Collect(_dicePrototype);
+            AudioController.PlaySound(SOUND.COLLECT);
         }
     }
     
