@@ -124,25 +124,6 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
         
     }
 
-    /*private void CheckForDiceCollision()
-    {
-        var collisions = Physics.OverlapSphere(transform.position, 1f, enemyAttackLayerMask.value);
-
-        if (collisions == null || collisions.Length == 0)
-            return;
-
-        for (var i = 0; i < collisions.Length; i++)
-        {
-            
-        }
-    }*/
-
-    /*public void Push(in Vector3 dir, in float force)
-    {
-        //TODO This should be a smooth movement
-        transform.position += dir.normalized * (force * 10 * Time.deltaTime);
-    }*/
-    
     //IDestructable Functions
     //================================================================================================================//
 
@@ -165,22 +146,31 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
     {
         var dir = Movement.Direction;
         var offsetDir = Vector3.Cross(dir, Vector3.up);
+
+        var currentPos = transform.position;
+        currentPos -= Vector3.up * 0.25f;
+        currentPos -= dir.normalized;
         
-        _rays[0] = new Ray(transform.position, dir);
-        _rays[1] = new Ray(transform.position + (offsetDir.normalized * 0.25f), dir);
-        _rays[2] = new Ray(transform.position - (offsetDir.normalized * 0.25f), dir);
+        _rays[0] = new Ray(currentPos, dir);
+        _rays[1] = new Ray(currentPos + (offsetDir.normalized * 0.25f), dir);
+        _rays[2] = new Ray(currentPos - (offsetDir.normalized * 0.25f), dir);
 
         for (int i = 0; i < _rays.Length; i++)
         {
-            if (Physics.Raycast(_rays[i], out var raycastHit, 0.65f, enemyAttackLayerMask.value) == false)
+            if (Physics.Raycast(_rays[i], out var raycastHit, 1.65f, enemyAttackLayerMask.value) == false)
+            {
+                Debug.DrawRay(_rays[i].origin, _rays[i].direction, Color.yellow);
                 continue;
+            }
+            
+            Debug.DrawRay(_rays[i].origin, _rays[i].direction, Color.green);
 
             var hitGameObject = raycastHit.transform.gameObject;
 
             if (hitGameObject.CompareTag(WALL_TAG))
             {
                 Movement.Reflect(raycastHit.normal);
-                //_currentVelocity = Vector3.Reflect(_currentVelocity, raycastHit.normal);
+
                 transform.forward = Movement.Direction;
                 break;
             }
@@ -188,9 +178,13 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
             {
                 if (hitGameObject.TryGetComponent<Dice_Prototype>(out var dice) == false)
                     continue;
+
+                if (dice.IsMoving)
+                    continue;
             
                 dice.ReduceEffectiveness();
                 dice.HitDice(Movement.Direction, 10);
+                return false;
             }
         }
 

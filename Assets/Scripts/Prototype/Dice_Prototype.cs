@@ -18,9 +18,12 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
     [SerializeField]
     private LineRenderer lineRenderer;
     [SerializeField]
-    private TMP_Text tmpText;
-    [SerializeField]
     private TMP_Text modifierText;
+
+    [SerializeField]
+    private Sprite[] diceSprites;
+    [SerializeField]
+    private SpriteRenderer diceValueSpriteRenderer;
 
     private int _currentValue;
 
@@ -68,14 +71,6 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
     private Movement _movement;
 
     private bool _applyNoDamage;
-
-    /*public bool IsMoving { get; private set; }
-
-    private Vector3 _currentVelocity;
-    [SerializeField]
-    private float speedDecay;
-
-    private const float MovingThreshold = 0.25f;*/
     
     //================================================================================================================//
 
@@ -110,7 +105,7 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
         if (Movement.IsMoving == false)
             return;
         
-        tmpText.transform.eulerAngles = Vector3.right * 90;
+        //tmpText.transform.eulerAngles = Vector3.right * 90;
         modifierText.transform.eulerAngles = Vector3.right * 45;
     }
 
@@ -180,6 +175,7 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
     {
         _applyNoDamage = true;
         Movement.Move(direction, speed);
+        transform.forward = direction;
     }
     
     //Dice Functions
@@ -220,7 +216,8 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
     {
         _currentValue = value; 
 
-        tmpText.text = _currentValue.ToString();
+        //tmpText.text = _currentValue.ToString();
+        diceValueSpriteRenderer.sprite = diceSprites[_currentValue - 1];
     }
     private void SetNewModifier(in int value)
     {

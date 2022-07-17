@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Utilities;
 
@@ -16,16 +14,7 @@ public abstract class CollectableBase : MonoBehaviour, ICheckForCollision
     
     [Min(0f), SerializeField]
     private float launchForce;
-    /*[SerializeField]
-    private float groundHeight;
-    
-    //private Vector3 _currentVelocity;
-    [SerializeField]
-    private float speedDecay;
 
-    //protected bool IsMoving { get; private set; }
-    private const float MovingThreshold = 0.25f;*/
-    
     protected Movement Movement
     {
         get
@@ -51,36 +40,8 @@ public abstract class CollectableBase : MonoBehaviour, ICheckForCollision
         
         Movement.Init(this);
     }
-
-    // Update is called once per frame
-    private void Update()
-    {
-        if (Movement.IsMoving == false)
-            return;
-        
-        /*if (_currentVelocity.magnitude <= MovingThreshold)
-            IsMoving = false;
-        
-        //------------------------------------------------------------------------------------------------------------//
-
-        if (CheckForCollisions() == false)
-            return;
-        
-        //------------------------------------------------------------------------------------------------------------//
-
-        transform.position += _currentVelocity * Time.deltaTime;
-        
-        _currentVelocity -= _currentVelocity * (speedDecay * Time.deltaTime);
-
-        if (transform.position.y > groundHeight)
-            _currentVelocity += Physics.gravity * (speedDecay * Time.deltaTime);
-        else if (_currentVelocity.y > MovingThreshold)
-            _currentVelocity.y = -_currentVelocity.y / 3f;
-        else
-        {
-            _currentVelocity.y = 0f;
-        }*/
-    }
+    
+    //CollectableBase Functions
     //================================================================================================================//
 
     public void Launch()
@@ -92,9 +53,6 @@ public abstract class CollectableBase : MonoBehaviour, ICheckForCollision
     }
     
     public abstract void Collect(in Dice_Prototype collectedBy);
-    /*{
-        Destroy(gameObject);
-    }*/
     
     public bool CheckForCollision()
     {
@@ -115,7 +73,6 @@ public abstract class CollectableBase : MonoBehaviour, ICheckForCollision
             if (hitGameObject.CompareTag(WALL_TAG))
             {
                 Movement.Reflect(raycastHit.normal);
-                //_currentVelocity = Vector3.Reflect(_currentVelocity, raycastHit.normal);
                 transform.forward = Movement.Direction;
                 break;
             }

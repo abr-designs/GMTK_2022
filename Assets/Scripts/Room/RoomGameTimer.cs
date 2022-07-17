@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class RoomGameTimer : MonoBehaviour
 {
     public static Action ActionEvent;
+    public static Action<int> TickEvent;
     
     [SerializeField]
     private int ticksPerAction;
@@ -14,8 +12,8 @@ public class RoomGameTimer : MonoBehaviour
     [Min(0.1f), SerializeField]
     private float tickTime;
 
-    [SerializeField]
-    private TMP_Text TEMP_TickText;
+    /*[SerializeField]
+    private TMP_Text TEMP_TickText;*/
     
     
     private float _tickTimer;
@@ -23,12 +21,6 @@ public class RoomGameTimer : MonoBehaviour
     
     //Unity Functions
     //================================================================================================================//
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        TEMP_TickText.text = $"{_tickCount}/{ticksPerAction}";
-    }
 
     // Update is called once per frame
     private void Update()
@@ -39,18 +31,21 @@ public class RoomGameTimer : MonoBehaviour
             return;
         }
         
-        _tickCount++;
         _tickTimer = 0f;
-        TEMP_TickText.text = $"{_tickCount}/{ticksPerAction}";
 
-        if (_tickCount < ticksPerAction)
+
+        if (_tickCount++ < ticksPerAction)
+        {
+            TickEvent?.Invoke(_tickCount);
             return;
+        }
         
         ActionEvent?.Invoke();
         _tickCount = 0;
-        TEMP_TickText.text = $"{_tickCount}/{ticksPerAction}";
+        TickEvent?.Invoke(_tickCount);
+
     }
-    
+
     //================================================================================================================//
 
 }

@@ -51,8 +51,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   launchForce: 10
-  groundHeight: -0.144
-  speedDecay: 4
   healAmount: 2
 --- !u!114 &7249995052608186440
 MonoBehaviour:
@@ -93,6 +91,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4105031179271174531}
   - component: {fileID: 3447243806892283626}
+  - component: {fileID: 6556322653143094243}
   - component: {fileID: 4105031179271174530}
   m_Layer: 8
   m_Name: tile_0151
@@ -128,6 +127,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6edb035f2518fa4b8622e9894ae396b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6556322653143094243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4105031179271174532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f0e31f7fbfea5b419c5bb3fc19ed0dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &4105031179271174530
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -136,8 +147,8 @@ SpriteRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4105031179271174532}
   m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
@@ -148,7 +159,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 870aa39ff8b1e8341934705acac2b53d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
