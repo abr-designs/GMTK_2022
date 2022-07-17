@@ -17,7 +17,7 @@ MonoBehaviour:
   moveDistance: 8
   scale: 0.75
   spawnTime: 0.5
-  spawnDelay: {x: 0.1, y: 0.2}
+  spawnDelay: {x: 0.1, y: 1}
   spawnCurve:
     serializedVersion: 2
     m_Curve:
@@ -43,5 +43,16 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   shakeAmount: 0.05
-  lootDropCountRange: {x: 0, y: 0}
-  loot: []
+  lootDropCountRange: {x: 1, y: 2}
+  loot:
+  - name: Nothing
+    alwaysDrop: 0
+    weight: 5
+    dropCountRange: {x: 0, y: 0}
+    prefab: {fileID: 0}
+  - name: 1
+    alwaysDrop: 0
+    weight: 1
+    dropCountRange: {x: 1, y: 1}
+    prefab: {fileID: 2903490824064127088, guid: 28ed5176ec3102d488f565edf73139e3,
+      type: 3}

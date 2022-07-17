@@ -4,6 +4,8 @@ using Utilities;
 public class Movement : MonoBehaviour
 {
     private const float MovingThreshold = 0.25f;
+
+    private static readonly Rect MOVE_RECT = new Rect(-5, -5, 10, 10);
     
     //Properties
     //================================================================================================================//
@@ -54,7 +56,8 @@ public class Movement : MonoBehaviour
         
         //------------------------------------------------------------------------------------------------------------//
 
-        transform.position += _currentVelocity * Time.deltaTime;
+        //transform.position += _currentVelocity * Time.deltaTime;
+        TryMoveToNewPosition(_currentVelocity * Time.deltaTime);
         
         _currentVelocity -= _currentVelocity * (speedDecay * Time.deltaTime);
 
@@ -70,6 +73,25 @@ public class Movement : MonoBehaviour
             _currentVelocity.y = 0f;
         }
 
+    }
+
+    private void TryMoveToNewPosition(in Vector3 delta)
+    {
+        var currentPosition = transform.position;
+
+        currentPosition += delta;
+
+        if (currentPosition.x < MOVE_RECT.xMin)
+            currentPosition.x = MOVE_RECT.xMin;
+        else if (currentPosition.x > MOVE_RECT.xMax)
+            currentPosition.x = MOVE_RECT.xMax;
+        
+        if (currentPosition.z < MOVE_RECT.yMin)
+            currentPosition.z = MOVE_RECT.yMin;
+        else if (currentPosition.z > MOVE_RECT.yMax)
+            currentPosition.z = MOVE_RECT.yMax;
+
+        transform.position = currentPosition;
     }
     
     //Movement Functions

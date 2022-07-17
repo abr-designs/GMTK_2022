@@ -16,5 +16,7 @@ public class CoinCollectable : CollectableBase
             .SetFloatingValues(transform.position + Vector3.up, FloatingSprite.TYPE.TOKEN);
         
         Destroy(gameObject);
+        AudioController.PlaySound(SOUND.COLLECT);
+
     }
 }

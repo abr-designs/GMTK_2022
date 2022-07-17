@@ -17,7 +17,7 @@ MonoBehaviour:
   moveDistance: 16
   scale: 0.5
   spawnTime: 0.5
-  spawnDelay: {x: 0.1, y: 0.2}
+  spawnDelay: {x: 0.1, y: 1}
   spawnCurve:
     serializedVersion: 2
     m_Curve:

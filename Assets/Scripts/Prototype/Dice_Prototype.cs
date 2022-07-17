@@ -179,7 +179,8 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
 
     private void LaunchDice(in Vector3 direction, in float speed)
     {
-        Movement.Move(direction, speed);
+        
+        Movement.Move(Vector3.ProjectOnPlane(direction, Vector3.up), speed);
         
         transform.forward = direction;
     }
@@ -287,8 +288,9 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
             }
             else if (hitGameObject.CompareTag(DOOR_TAG))
             {
+                
                 GameStateManager.CarryOverModifier = _modifier;
-                 LevelManager.LoadNextLevel();
+                LevelManager.LoadNextLevel();
                 
                 return false;
             }

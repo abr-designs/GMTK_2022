@@ -39,6 +39,8 @@ public class RoomEnemyManager : MonoBehaviour
 
     public void SpawnEnemies(in IEnumerable<EnemyStatsScriptableObject> spawnEnemies, in Dice_Prototype[] dice)
     {
+        AudioController.PlaySound(SOUND.SPAWN, 0.5f);
+        
         _dice = dice;
         ActiveEnemies = new List<Enemy>();
         foreach (var enemyData in spawnEnemies)

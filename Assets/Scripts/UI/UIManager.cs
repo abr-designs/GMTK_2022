@@ -14,7 +14,7 @@ public class UIManager : MonoBehaviour
     [SerializeField, Header("Timer")]
     private Image timerImage;
 
-    private bool _showingTimer;
+    private bool _showingTimer = true;
 
     [SerializeField]
     private Sprite[] timerSprites;
@@ -38,6 +38,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField, Header("Fading UI")]
     private Image fadeImage;
+    
+    private bool _playedTune;
+
 
     //Unity Functions
     //================================================================================================================//
@@ -61,6 +64,8 @@ public class UIManager : MonoBehaviour
         winScreenWindow.SetActive(false);
 
         SetupButtons();
+
+        ShowTickTimer(false);
     }
 
     private void LateUpdate()
@@ -87,6 +92,7 @@ public class UIManager : MonoBehaviour
             winScreenWindow.SetActive(false);
             GameStateManager.Reset();
             ResetUICounters();
+            
         }
         
         restartButton.onClick.AddListener(RestartGame);
@@ -103,7 +109,13 @@ public class UIManager : MonoBehaviour
     }
     private void TickEvent(int tick)
     {
+        if(_showingTimer == false)
+            return;
+        
         timerImage.sprite = timerSprites[tick];
+        
+        AudioController.PlaySound(tick == 4 ? SOUND.ACTION : SOUND.TICK, 0.75f);
+
     }
     
     private void OnCoinCollected()
@@ -122,17 +134,39 @@ public class UIManager : MonoBehaviour
     {
         tokensEarnedText.text = "0";
         enemiesKilledText.text = "0";
+        
+        _playedTune = false;
     }
+
     
     private void OnLost()
     {
+        if (deathScreenWindow.activeInHierarchy)
+            return;
+        
+        
         deathScreenWindow.SetActive(true);
         
+        if (_playedTune)
+            return;
+        
+        AudioController.PlayMusic(MUSIC.LOSE);
+        _playedTune = true;
+
     }
-    
+
     private void OnWon()
     {
+        if (winScreenWindow.activeInHierarchy)
+            return;
+        
         winScreenWindow.SetActive(true);
+
+        if (_playedTune)
+            return;
+        
+        AudioController.PlayMusic(MUSIC.WIN);
+        _playedTune = true;
     }
 
     

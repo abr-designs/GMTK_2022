@@ -13,5 +13,6 @@ public class PotionCollectable : CollectableBase
         collectedBy.RaiseEffectiveness(healAmount);
         
         Destroy(gameObject);
+        AudioController.PlaySound(SOUND.COLLECT);
     }
 }

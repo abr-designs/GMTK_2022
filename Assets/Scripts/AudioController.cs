@@ -16,6 +16,14 @@ public enum SOUND
         DOOR,
 }
 
+public enum MUSIC
+{
+    NONE,
+    WIN,
+    LOSE,
+    NEW_ROOM
+}
+
 public class AudioController : MonoBehaviour
 {
     private static AudioController _instance;
@@ -27,6 +35,7 @@ public class AudioController : MonoBehaviour
 
     [SerializeField, Header("Sound Clips")]
     private AudioClip hitSound;
+    [SerializeField]
     private AudioClip tickSound;
     [SerializeField]
     private AudioClip ActionSound;
@@ -41,6 +50,15 @@ public class AudioController : MonoBehaviour
     private AudioClip DoorSound;
     [SerializeField]
     private AudioClip CollectSound;
+    
+    [SerializeField, Header("Music Clips")]
+    private AudioClip winMusicSound;
+    [SerializeField]
+    private AudioClip loseMusicSound;
+    [SerializeField]
+    private AudioClip newRoomMusicSound;
+
+
 
     private void Awake()
     {
@@ -90,6 +108,34 @@ public class AudioController : MonoBehaviour
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(sound), sound, null);
+        }
+
+        SFXAudioSource.PlayOneShot(foundClip, volume);
+    }
+    
+    public static void PlayMusic(MUSIC music, in float volume = 1f)
+    {
+        _instance.TryPlaySound(music, volume);
+    }
+
+    private void TryPlaySound(MUSIC music, in float volume)
+    {
+        AudioClip foundClip;
+        switch (music)
+        {
+            case MUSIC.NONE:
+                return;
+            case MUSIC.WIN:
+                foundClip = winMusicSound;
+                break;
+            case MUSIC.LOSE:
+                foundClip = loseMusicSound;
+                break;
+            case MUSIC.NEW_ROOM:
+                foundClip = newRoomMusicSound;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(music), music, null);
         }
 
         SFXAudioSource.PlayOneShot(foundClip, volume);

@@ -21,7 +21,7 @@ namespace Utilities.Extension
     {
         public static float GetRandomRange(this Vector2 vector2)
         {
-            return vector2.x == vector2.y ? vector2.x : Random.Range(vector2.x, vector2.y);
+            return Random.Range(vector2.x, vector2.y);
         }
     }
 

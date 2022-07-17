@@ -76,6 +76,8 @@ public class LevelManager : MonoBehaviour
         if (_loading)
             return;
         
+        AudioController.PlayMusic(MUSIC.NEW_ROOM);
+        
         if (_currentRoomIndex + 1 >= roomPrefabs.Count)
         {
             //TODO Show game complete

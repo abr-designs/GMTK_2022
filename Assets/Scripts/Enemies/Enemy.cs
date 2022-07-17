@@ -30,6 +30,8 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
 
     private EnemyStatsScriptableObject _enemyStatsScriptableObject;
 
+    [SerializeField]
+    private SpriteRenderer whiteHurtRenderer;
     private SpriteRenderer SpriteRenderer
     {
         get
@@ -42,6 +44,19 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
     }
 
     private SpriteRenderer _spriteRenderer;
+    
+    private SpriteMask SpriteMask
+    {
+        get
+        {
+            if (_spriteMask == null)
+                _spriteMask = GetComponentInChildren<SpriteMask>();
+            
+            return _spriteMask;
+        }
+    }
+
+    private SpriteMask _spriteMask;
     
     public Movement Movement
     {
@@ -101,6 +116,7 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
         _enemyStatsScriptableObject = enemyStatsScriptableObject;
         
         SpriteRenderer.sprite = _enemyStatsScriptableObject.enemySprite;
+        SpriteMask.sprite = _enemyStatsScriptableObject.enemySprite;
         _moveDistance = _enemyStatsScriptableObject.moveDistance;
 
         StartHealth = CurrentHealth = _enemyStatsScriptableObject.enemyHealth;
@@ -206,6 +222,8 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
         {
             EffectFactory.CreateFloatingText()
                 .SetFloatingValues(transform.position + Vector3.up, changeAmount);
+
+            StartCoroutine(HitEffectCoroutine());
             return;
         }
         
@@ -217,6 +235,15 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
         _killed = true;
         //TODO Do any VFX for death here
         Destroy(gameObject);
+    }
+
+    private IEnumerator HitEffectCoroutine()
+    {
+        whiteHurtRenderer.enabled = true;
+
+        yield return new WaitForSeconds(0.2f);
+
+        whiteHurtRenderer.enabled = false;
     }
     
     //ICheckForCollision

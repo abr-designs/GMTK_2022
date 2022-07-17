@@ -45,18 +45,19 @@ public class RoomGameTimer : MonoBehaviour
         }
         
         _tickTimer = 0f;
+        
+        if(_tickCount == TICKS_PER_ACTION)
+            _tickCount = 0;
 
 
-        if (_tickCount++ < TICKS_PER_ACTION)
+        if (++_tickCount < TICKS_PER_ACTION)
         {
             TickEvent?.Invoke(_tickCount);
             return;
         }
         
         ActionEvent?.Invoke();
-        _tickCount = 0;
         TickEvent?.Invoke(_tickCount);
-
     }
     
     private void OnDisable()
