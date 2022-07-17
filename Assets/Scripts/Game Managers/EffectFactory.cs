@@ -9,8 +9,15 @@ public class EffectFactory : MonoBehaviour
     [SerializeField]
     private FloatingSprite floatingSpritePrefab;
 
-    [SerializeField]
+    [SerializeField, Header("Particle Prefabs")]
     private ParticleSystem spawningVFXPrefab;
+    
+    [SerializeField]
+    private ParticleSystem smallHitVFXPrefab;
+    [SerializeField]
+    private ParticleSystem bigHitVFXPrefab;
+    [SerializeField]
+    private ParticleSystem bumpVFXPrefab;
 
     private void Awake()
     {
@@ -25,6 +32,9 @@ public class EffectFactory : MonoBehaviour
 
     }
 
+    //Floating VFX
+    //================================================================================================================//
+
     public static FloatingText CreateFloatingText()
     {
         return Instantiate(_instance.floatingTextPrefab, _instance.transform, false);
@@ -35,8 +45,27 @@ public class EffectFactory : MonoBehaviour
         return Instantiate(_instance.floatingSpritePrefab, _instance.transform, false);
     }
     
+    //Particle VFX
+    //================================================================================================================//
+
     public static ParticleSystem CreateSpawningVFX()
     {
         return Instantiate(_instance.spawningVFXPrefab, _instance.transform, false);
     }
+    
+    public static ParticleSystem CreateSmallHitVFX()
+    {
+        return Instantiate(_instance.smallHitVFXPrefab, _instance.transform, false);
+    }
+    public static ParticleSystem CreateBigHitVFX()
+    {
+        return Instantiate(_instance.bigHitVFXPrefab, _instance.transform, false);
+    }
+    public static ParticleSystem CreateBumpVFX()
+    {
+        return Instantiate(_instance.bumpVFXPrefab, _instance.transform, false);
+    }
+    
+    //================================================================================================================//
+
 }

@@ -1,4 +1,5 @@
 using System;
+using DefaultNamespace;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -16,8 +17,7 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
     //Properties
     //================================================================================================================//
 
-    [SerializeField]
-    private int modifier;
+    private int _modifier;
     
     [SerializeField]
     private LineRenderer lineRenderer;
@@ -105,7 +105,7 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
 
         _rays = new Ray[3];
         RollNewRandomNumber();
-        SetNewModifier(0);
+        //SetNewModifier(0);
         
         Movement.Init(this);
     }
@@ -214,19 +214,19 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
             return;
         
         //If we've reach the limit, then the dice is dead
-        if (modifier - 1 <= -6)
+        if (_modifier - 1 <= -6)
         {
             Destroy(gameObject);
             OnDiceDied?.Invoke();
             return;
         }
         
-        SetNewModifier(modifier - 1);
+        SetNewModifier(_modifier - 1);
     }
     
     public void RaiseEffectiveness(in int amount)
     {
-        SetNewModifier(modifier + amount);
+        SetNewModifier(_modifier + amount);
         
         EffectFactory.CreateFloatingText()
             .SetFloatingValues(transform.position + Vector3.up, amount);
@@ -239,11 +239,11 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
         //tmpText.text = _currentValue.ToString();
         diceValueSpriteRenderer.sprite = diceSprites[_currentValue - 1];
     }
-    private void SetNewModifier(in int value)
+    public void SetNewModifier(in int value)
     {
-        modifier = value;
+        _modifier = value;
 
-        if (modifier == 0)
+        if (_modifier == 0)
         {
             modifierText.text = string.Empty;
             return;
@@ -269,13 +269,18 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
 
             if (hitGameObject.CompareTag(WALL_TAG))
             {
+                var bumpVFX = EffectFactory.CreateBumpVFX();
+                bumpVFX.transform.position = raycastHit.point;
+                Destroy(bumpVFX, 2f);
+                
                 Movement.Reflect(raycastHit.normal);
                 transform.forward = Movement.Direction;
                 break;
             }
             else if (hitGameObject.CompareTag(DOOR_TAG))
             {
-                LevelManager.LoadNextLevel();
+                GameStateManager.CarryOverModifier = _modifier;
+                 LevelManager.LoadNextLevel();
                 
                 return false;
             }
@@ -286,7 +291,7 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
                 var destructable = hitGameObject.GetComponent<IDestructable>();
                 if (destructable != null)
                 {
-                    var damage = Mathf.Clamp(Mathf.Abs(_currentValue + modifier), 1, 20);
+                    var damage = Mathf.Clamp(Mathf.Abs(_currentValue + _modifier), 1, 20);
                     destructable.ChangeHealth(-damage);
 
                     if (destructable.CurrentHealth <= 0)
@@ -296,6 +301,19 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
                     shouldDestroy = true;
 
                 RollNewRandomNumber();
+                
+                if (destructable.CurrentHealth == 0)
+                {
+                    var bigHitVFX = EffectFactory.CreateBigHitVFX();
+                    bigHitVFX.transform.position = raycastHit.point;
+                    Destroy(bigHitVFX.gameObject, 2f);
+                }
+                else
+                {
+                    var smallHitVFX = EffectFactory.CreateSmallHitVFX();
+                    smallHitVFX.transform.position = raycastHit.point;
+                    Destroy(smallHitVFX.gameObject, 2f);
+                }
 
                 if (shouldDestroy == false)
                 {
@@ -310,6 +328,7 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
                     
                     return true;
                 }
+
                 
                 if(destructable.HandlesDestruction == false)
                     Destroy(hitGameObject);

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DefaultNamespace;
 using Destructibles;
 using UnityEngine;
 
@@ -122,7 +123,13 @@ public class Room : MonoBehaviour
         for (var i = 0; i < startLocations.Length; i++)
         {
             var newDice = Instantiate(dicePrefab, startLocations[i], Quaternion.identity, transform);
+            if (GameStateManager.CarryOverModifier != 0)
+            {
+                newDice.SetNewModifier(GameStateManager.CarryOverModifier);
+                GameStateManager.CarryOverModifier = 0;
+            }
             _dice[i] = newDice;
+            
         }
     }
     
@@ -155,6 +162,7 @@ public class Room : MonoBehaviour
                 case CONIDITION.ENEMIES:
                     if (roomEnemyManager.ActiveEnemies.All(a => a == null) == false)
                         break;
+                    _uiManager.ShowTickTimer(false);
                     door.SetDoorOpen(true);
                     _completed = true;
                     break;
@@ -167,6 +175,8 @@ public class Room : MonoBehaviour
                 case CONIDITION.BOTH:
                     if (roomEnemyManager.ActiveEnemies.All(a => a == null) == false)
                         break;
+                    _uiManager.ShowTickTimer(false);
+                    
                     if (_roomDestructables.All(a => a == null) == false)
                         break;
                     door.SetDoorOpen(true);

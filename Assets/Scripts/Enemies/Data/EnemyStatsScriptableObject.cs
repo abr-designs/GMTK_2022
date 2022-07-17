@@ -9,6 +9,8 @@ public class EnemyStatsScriptableObject : ScriptableObject
     public Sprite enemySprite;
     public int enemyHealth;
     public float moveDistance;
+    [Min(0.5f)]
+    public float scale = 1f;
 
     [Header("Spawn Data")] 
     public float spawnTime;

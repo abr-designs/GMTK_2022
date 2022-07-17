@@ -14,6 +14,8 @@ public class UIManager : MonoBehaviour
     [SerializeField, Header("Timer")]
     private Image timerImage;
 
+    private bool _showingTimer;
+
     [SerializeField]
     private Sprite[] timerSprites;
 
@@ -28,6 +30,11 @@ public class UIManager : MonoBehaviour
     private GameObject deathScreenWindow;
     [SerializeField]
     private Button restartButton;
+    
+    [SerializeField, Header("Win Screen")]
+    private GameObject winScreenWindow;
+    [SerializeField]
+    private Button newGameButton;
 
     [SerializeField, Header("Fading UI")]
     private Image fadeImage;
@@ -41,15 +48,17 @@ public class UIManager : MonoBehaviour
         CoinCollectable.OnCoinCollected += OnCoinCollected;
         Enemy.OnEnemyKilled += OnEnemyKilled;
         Room.OnLost += OnLost;
+        LevelManager.OnWon += OnWon;
     }
 
-
+    
 
     // Start is called before the first frame update
     private void Start()
     {
         TickEvent(0);
         deathScreenWindow.SetActive(false);
+        winScreenWindow.SetActive(false);
 
         SetupButtons();
     }
@@ -63,6 +72,7 @@ public class UIManager : MonoBehaviour
     {
         RoomGameTimer.TickEvent -= TickEvent;
         Room.OnLost -= OnLost;
+        LevelManager.OnWon -= OnWon;
     }
 
     //UIManager Functions
@@ -70,15 +80,25 @@ public class UIManager : MonoBehaviour
 
     private void SetupButtons()
     {
-        restartButton.onClick.AddListener(() =>
+        void RestartGame()
         {
             LevelManager.LoadFirstLevel();
             deathScreenWindow.SetActive(false);
-        });
+            winScreenWindow.SetActive(false);
+            GameStateManager.Reset();
+            ResetUICounters();
+        }
+        
+        restartButton.onClick.AddListener(RestartGame);
+        newGameButton.onClick.AddListener(RestartGame);
     }
 
     public void ShowTickTimer(bool showTickTimer)
     {
+        if(_showingTimer == showTickTimer)
+            return;
+
+        _showingTimer = showTickTimer;
         timerImage.enabled = showTickTimer;
     }
     private void TickEvent(int tick)
@@ -97,12 +117,24 @@ public class UIManager : MonoBehaviour
         GameStateManager.TotalKills++;
         enemiesKilledText.text = GameStateManager.TotalKills.ToString();
     }
+
+    private void ResetUICounters()
+    {
+        tokensEarnedText.text = "0";
+        enemiesKilledText.text = "0";
+    }
     
     private void OnLost()
     {
         deathScreenWindow.SetActive(true);
         
     }
+    
+    private void OnWon()
+    {
+        winScreenWindow.SetActive(true);
+    }
+
     
     //Fade Functions
     //================================================================================================================//

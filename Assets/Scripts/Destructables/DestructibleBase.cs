@@ -9,9 +9,11 @@ namespace Destructibles
     {
         public static Action OnDestroyed;
         
+        
+        
         //Properties
         //================================================================================================================//
-
+        private static Room _currentRoom;
         public bool HandlesDestruction => true;
         public int StartHealth => startHealth;
         [Min(0), SerializeField]
@@ -28,6 +30,9 @@ namespace Destructibles
 
         protected virtual void Start()
         {
+            if (_currentRoom == null)
+                _currentRoom = FindObjectOfType<Room>();
+            
             CurrentHealth = startHealth;
         }
 
@@ -53,7 +58,7 @@ namespace Destructibles
                 var dropCount = lootData.dropCountRange.GetRandomRange(true);
                 for (int i = 0; i < dropCount; i++)
                 {
-                    var temp = Instantiate(lootData.prefab, transform.position, quaternion.identity);
+                    var temp = Instantiate(lootData.prefab, transform.position, quaternion.identity, _currentRoom.transform);
                 
                     if(temp.TryGetComponent<CollectableBase>(out var collectableBase))
                         collectableBase.Launch();

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
+    public static Action OnWon;
     //Properties
     //================================================================================================================//
 
@@ -78,6 +79,7 @@ public class LevelManager : MonoBehaviour
         if (_currentRoomIndex + 1 >= roomPrefabs.Count)
         {
             //TODO Show game complete
+            OnWon?.Invoke();
             return;
         }
         

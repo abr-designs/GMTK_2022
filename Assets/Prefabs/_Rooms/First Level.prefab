@@ -1065,7 +1065,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ticksPerAction: 4
-  tickTime: 0.5
+  tickTime: 0.75
 --- !u!114 &6792146536075838040
 MonoBehaviour:
   m_ObjectHideFlags: 0

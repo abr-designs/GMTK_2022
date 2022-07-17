@@ -6,7 +6,6 @@ using Utilities;
 using Utilities.Extension;
 using Random = UnityEngine.Random;
 
-[RequireComponent(typeof(SpriteRenderer))]
 public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
 {
     public static Action OnEnemyKilled;
@@ -36,7 +35,7 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
         get
         {
             if (_spriteRenderer == null)
-                _spriteRenderer = GetComponent<SpriteRenderer>();
+                _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             
             return _spriteRenderer;
         }
@@ -106,6 +105,8 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
 
         StartHealth = CurrentHealth = _enemyStatsScriptableObject.enemyHealth;
 
+        SpriteRenderer.transform.localScale = Vector3.one * _enemyStatsScriptableObject.scale;
+
         PlaySpawnAnimation();
     }
 
@@ -118,7 +119,7 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
             var dropCount = lootData.dropCountRange.GetRandomRange(true);
             for (int i = 0; i < dropCount; i++)
             {
-                var temp = Instantiate(lootData.prefab, transform.position, quaternion.identity);
+                var temp = Instantiate(lootData.prefab, transform.position, quaternion.identity, _roomEnemyManager.transform);
                 
                 if(temp.TryGetComponent<CollectableBase>(out var collectableBase))
                     collectableBase.Launch();
@@ -163,6 +164,7 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
             
 
             _isSpawning = false;
+            Destroy(VFX.gameObject);
         }
         
         if (_isSpawning)
@@ -259,6 +261,10 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
 
                 if (dice.IsMoving)
                     continue;
+                
+                var smallHitVFX = EffectFactory.CreateSmallHitVFX();
+                smallHitVFX.transform.position = raycastHit.point;
+                Destroy(smallHitVFX.gameObject, 2f);
             
                 dice.ReduceEffectiveness();
                 dice.HitDice(Movement.Direction, 10);
