@@ -56,6 +56,9 @@ namespace Destructibles
         {
             CurrentHealth = Mathf.Clamp(CurrentHealth + changeAmount, 0, StartHealth);
 
+            EffectFactory.CreateFloatingText()
+                .SetFloatingValues(transform.position + Vector3.up, changeAmount);
+            
             if (CurrentHealth > 0)
                 return;
 

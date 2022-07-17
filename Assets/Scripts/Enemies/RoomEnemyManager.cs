@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Utilities.Extension;
 
@@ -17,8 +18,8 @@ public class RoomEnemyManager : MonoBehaviour
 
     [SerializeField]
     private Enemy enemyPrefab;
-    [SerializeField]
-    private EnemyStatsScriptableObject[] spawnEnemies;
+    /*[SerializeField]
+    private EnemyStatsScriptableObject[] spawnEnemies;*/
     
     //Unity Functions
     //================================================================================================================//
@@ -27,13 +28,13 @@ public class RoomEnemyManager : MonoBehaviour
     private void Start()
     {
         _dice = FindObjectsOfType<Dice_Prototype>();
-        SpawnEnemies();
+        //SpawnEnemies();
     }
     
 
     //================================================================================================================//
 
-    private void SpawnEnemies()
+    public void SpawnEnemies(in IEnumerable<EnemyStatsScriptableObject> spawnEnemies)
     {
         foreach (var enemyData in spawnEnemies)
         {

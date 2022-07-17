@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class CoinCollectable : CollectableBase
 {
@@ -10,6 +11,9 @@ public class CoinCollectable : CollectableBase
             return;
         
         OnCoinCollected?.Invoke();
+
+        EffectFactory.CreateFloatingSprite()
+            .SetFloatingValues(transform.position + Vector3.up, FloatingSprite.TYPE.TOKEN);
         
         Destroy(gameObject);
     }

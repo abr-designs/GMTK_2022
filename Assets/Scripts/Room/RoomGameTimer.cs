@@ -1,11 +1,12 @@
 using System;
+using DefaultNamespace;
 using UnityEngine;
 
 public class RoomGameTimer : MonoBehaviour
 {
     public static Action ActionEvent;
     public static Action<int> TickEvent;
-    
+
     [SerializeField]
     private int ticksPerAction;
     
@@ -25,6 +26,8 @@ public class RoomGameTimer : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        GameStateManager.TotalTime += Time.deltaTime;
+        
         if (_tickTimer < tickTime)
         {
             _tickTimer += Time.deltaTime;

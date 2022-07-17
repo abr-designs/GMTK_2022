@@ -1,3 +1,4 @@
+using System;
 using Unity.Mathematics;
 using UnityEngine;
 using Utilities;
@@ -6,6 +7,8 @@ using Utilities.Extension;
 [RequireComponent(typeof(SpriteRenderer))]
 public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
 {
+    public static Action OnEnemyKilled;
+    
     private const string WALL_TAG = "Wall";
     private const string DICE_TAG = "Dice";
     
@@ -132,9 +135,18 @@ public class Enemy : MonoBehaviour, IDestructable, ICheckForCollision
         CurrentHealth = Mathf.Clamp(CurrentHealth + changeAmount, 0, StartHealth);
 
         if (CurrentHealth > 0)
+        {
+            EffectFactory.CreateFloatingText()
+                .SetFloatingValues(transform.position + Vector3.up, changeAmount);
             return;
+        }
+        
+        EffectFactory.CreateFloatingSprite()
+            .SetFloatingValues(transform.position + Vector3.up, FloatingSprite.TYPE.SKULL);
         
         DropLoot();
+        
+        OnEnemyKilled?.Invoke();
         //TODO Do any VFX for death here
         Destroy(gameObject);
     }

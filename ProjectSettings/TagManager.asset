@@ -7,6 +7,7 @@ TagManager:
   - Wall
   - Destructable
   - Dice
+  - Door
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Destructable
   - Collectable
   - Dice
-  - 
+  - Door
   - 
   - 
   - 

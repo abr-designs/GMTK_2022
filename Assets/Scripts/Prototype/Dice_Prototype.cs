@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -6,7 +7,10 @@ using Random = UnityEngine.Random;
 
 public class Dice_Prototype : MonoBehaviour, ICheckForCollision
 {
+    public static Action OnDiceDied;
+    
     private const string WALL_TAG = "Wall";
+    private const string DOOR_TAG = "Door";
     private const string DESTRUCTABLE_TAG = "Destructable";
     
     //Properties
@@ -35,8 +39,17 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
 
     private Vector2 _currentDirection;
 
-    [SerializeField]
-    private Camera _currentCamera;
+    private static Camera CurrentCamera
+    {
+        get
+        {
+            if (_currentCamera == null)
+                _currentCamera = FindObjectOfType<Camera>();
+
+            return _currentCamera;
+        }
+    }
+    private static Camera _currentCamera;
 
     private Vector3 _dragWorldPosition;
 
@@ -126,9 +139,9 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
             _currentlyDragging = true;
         }
         
-        var ray = _currentCamera.ScreenPointToRay(Input.mousePosition);
+        var ray = CurrentCamera.ScreenPointToRay(Input.mousePosition);
         
-        Debug.DrawLine(ray.origin, ray.origin + (ray.direction * _currentCamera.farClipPlane), Color.yellow);
+        Debug.DrawLine(ray.origin, ray.origin + (ray.direction * CurrentCamera.farClipPlane), Color.yellow);
 
         if (_plane.Raycast(ray, out var enter) == false)
             return;
@@ -201,8 +214,12 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
             return;
         
         //If we've reach the limit, then the dice is dead
-        if(modifier - 1 <= -6)
+        if (modifier - 1 <= -6)
+        {
+            OnDiceDied?.Invoke();
             Destroy(gameObject);
+            return;
+        }
         
         SetNewModifier(modifier - 1);
     }
@@ -210,6 +227,9 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
     public void RaiseEffectiveness(in int amount)
     {
         SetNewModifier(modifier + amount);
+        
+        EffectFactory.CreateFloatingText()
+            .SetFloatingValues(transform.position + Vector3.up, amount);
     }
 
     private void SetNewValue(in int value)
@@ -252,6 +272,12 @@ public class Dice_Prototype : MonoBehaviour, ICheckForCollision
                 Movement.Reflect(raycastHit.normal);
                 transform.forward = Movement.Direction;
                 break;
+            }
+            else if (hitGameObject.CompareTag(DOOR_TAG))
+            {
+                LevelManager.LoadNextLevel();
+                
+                return false;
             }
             else if (_applyNoDamage == false && hitGameObject.CompareTag(DESTRUCTABLE_TAG))
             {
